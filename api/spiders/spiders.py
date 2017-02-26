@@ -11,6 +11,7 @@ from scrapy.http import Request
 from scrapy.selector import Selector
 from scrapy.spider import CrawlSpider
 
+from api import config
 from api.items import TweetsItem
 
 
@@ -84,7 +85,8 @@ class Spider(CrawlSpider):
                 break
 
     def GetDb(self):
-        db = MySQLdb.connect(host='127.0.0.1', user="root", passwd="123456", db="sina", port=3306, charset="utf8")
+        db = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD, db=config.DB_NAME,
+                             port=config.DB_PORT, charset="utf8")
         return db.cursor()
 
     def GetSinaWatcherUsers(self):
@@ -138,22 +140,22 @@ class Spider(CrawlSpider):
         if isinstance(tweetsItem, TweetsItem):
             sender = 'service@csi0n.com'
             receivers = [self.EMAIL]
-            message = MIMEText("用户ID为:%s 发表了一篇新的微博,系统分析报告如下" % (str(tweetsItem['ID'])), 'plain', 'utf-8')
+            message = MIMEText("<!DOCTYPE html><html><head>" \
+                               "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" \
+                               "<title>分析报告</title></head>" \
+                               "<body>内容:%s<br/>平台:%s<br/>发布时间:%s<br/>心情指数:%d<br/></body>\
+                               </html>" % (
+                                   tweetsItem['Content'], tweetsItem['Tools'], tweetsItem['PubTime'],
+                                   tweetsItem['emotion']), "html", "utf-8")
             message['From'] = Header('csi0n服务信箱', 'utf-8')
             message['To'] = Header("%s" % (str(self.EMAIL)), 'utf-8')
-            print tweetsItem['Content'].encode('UTF-8', 'ignore'), tweetsItem['Tools'], tweetsItem['PubTime']
-            subject = "<!DOCTYPE html><html><head>" \
-                      "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" \
-                      "<title>分析报告</title></head>" \
-                      "<body>内容:%s<br/>平台:%s<br/>发布时间:%s<br/>心情指数:%d<br/></body>\
-                      </html>" % (
-                          tweetsItem['Content'], tweetsItem['Tools'], tweetsItem['PubTime'], tweetsItem['emotion'])
+            subject = "用户ID为:%s 发表了一篇新的微博,系统分析报告如下" % (str(tweetsItem['ID']))
             message['Subject'] = Header(subject, 'utf-8')
 
             try:
                 smtpObj = smtplib.SMTP('smtp.csi0n.com')
-                smtpObj.login(sender, "!16fe3aa7de0edd58")
+                smtpObj.login(sender, "!asd841506740")
                 smtpObj.sendmail(sender, receivers, message.as_string())
                 print "邮件发送成功"
             except smtplib.SMTPException, e:
-                print "发送邮件失败"
+                print "发送邮件失败", e

@@ -3,12 +3,14 @@ import time
 
 import MySQLdb
 
+from api import config
 from items import TweetsItem
 
 
 class MysqlDbPipleline(object):
     def __init__(self):
-        self.db = MySQLdb.connect(host='127.0.0.1', user="root", passwd="123456", db="sina", port=3306, charset="utf8")
+        self.db = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD,
+                                  db=config.DB_NAME, port=config.DB_PORT, charset="utf8")
         self.cursor = self.db.cursor()
 
     def closeDb(self):
