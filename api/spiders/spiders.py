@@ -96,7 +96,7 @@ class Spider(CrawlSpider):
         results = cursor.fetchall()
         uids = []
         for row in results:
-            uids.append({"uid": int(row[0]), "email": row[1]})
+            uids.append({"uid": int(row[1]), "email": row[2]})
         return uids
 
     def GetSinaLastWeiBoByUid(self, uid):
@@ -138,7 +138,7 @@ class Spider(CrawlSpider):
 
     def sendEmail(self, tweetsItem):
         if isinstance(tweetsItem, TweetsItem):
-            sender = 'service@csi0n.com'
+            sender = 'exception@csi0n.com'
             receivers = [self.EMAIL]
             message = MIMEText("<!DOCTYPE html><html><head>" \
                                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" \
@@ -154,7 +154,7 @@ class Spider(CrawlSpider):
 
             try:
                 smtpObj = smtplib.SMTP('smtp.csi0n.com')
-                smtpObj.login(sender, "!asd841506740")
+                smtpObj.login(sender, "Asd841506740")
                 smtpObj.sendmail(sender, receivers, message.as_string())
                 print "邮件发送成功"
             except smtplib.SMTPException, e:
