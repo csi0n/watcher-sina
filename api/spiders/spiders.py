@@ -140,7 +140,7 @@ class Spider(CrawlSpider):
 
     def sendEmail(self, tweetsItem):
         if isinstance(tweetsItem, TweetsItem):
-            sender = 'exception@csi0n.com'
+            sender = 'service@csi0n.com'
             receivers = [self.EMAIL]
             message = MIMEText("<!DOCTYPE html><html><head>" \
                                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" \
@@ -149,14 +149,13 @@ class Spider(CrawlSpider):
                                </html>" % (
                                    tweetsItem['Content'], tweetsItem['Tools'], tweetsItem['PubTime'],
                                    tweetsItem['emotion']), "html", "utf-8")
-            message['From'] = Header('csi0n服务信箱', 'utf-8')
-            message['To'] = Header("%s" % (str(self.EMAIL)), 'utf-8')
+            message['From'] = Header('csi0n', 'utf-8')
+            message['To'] = Header("%s" % (self.EMAIL), 'utf-8')
             subject = "用户ID为:%s 发表了一篇新的微博,系统分析报告如下" % (str(tweetsItem['ID']))
             message['Subject'] = Header(subject, 'utf-8')
-
             try:
                 smtpObj = smtplib.SMTP('smtp.csi0n.com')
-                smtpObj.login(sender, "Asd841506740")
+                smtpObj.login(sender, "!16fe3aa7de0edd58")
                 smtpObj.sendmail(sender, receivers, message.as_string())
                 print "邮件发送成功"
             except smtplib.SMTPException, e:

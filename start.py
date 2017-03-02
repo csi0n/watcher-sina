@@ -1,6 +1,9 @@
 # encoding=utf-8
-
+import smtplib
 import sys
+import textwrap
+from email.header import Header
+from email.mime.text import MIMEText
 
 from scrapy import cmdline
 
