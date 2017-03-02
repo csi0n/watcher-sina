@@ -19,6 +19,13 @@ class Spider(CrawlSpider):
     name = "api"
     host = "http://weibo.cn"
 
+    def __init__(self):
+        super(Spider, self).__init__()
+        self.db = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD,
+                                  db=config.DB_NAME,
+                                  port=config.DB_PORT, charset="utf8")
+        self.cursor = self.db.cursor()
+
     def start_requests(self):
         scrawl_ID = self.GetSinaWatcherUsers()
         while scrawl_ID.__len__():
@@ -75,7 +82,7 @@ class Spider(CrawlSpider):
                         tweetsItems['emotion'] = emotion['emotion']
                         self.updateWeibo(tweetsItems)
                         flag_save_update = False
-                    self.sendEmail(tweetsItems)
+                        # self.sendEmail(tweetsItems)
             else:
                 emotion = self.GetEmotion(tweetsItems['Content'])
                 tweetsItems['emotion'] = emotion['emotion']
@@ -84,13 +91,8 @@ class Spider(CrawlSpider):
                 self.sendEmail(tweetsItems)
                 break
 
-    def GetDb(self):
-        db = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD, db=config.DB_NAME,
-                             port=config.DB_PORT, charset="utf8")
-        return db.cursor()
-
     def GetSinaWatcherUsers(self):
-        cursor = self.GetDb()
+        cursor = self.cursor
         sql = "SELECT * FROM watcher_users"
         cursor.execute(sql)
         results = cursor.fetchall()
@@ -100,7 +102,7 @@ class Spider(CrawlSpider):
         return uids
 
     def GetSinaLastWeiBoByUid(self, uid):
-        cursor = self.GetDb()
+        cursor = self.cursor
         sql = "select * from sina where uid='%s'" % (str(uid))
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -120,13 +122,13 @@ class Spider(CrawlSpider):
     def updateWeibo(self, tweetsItems):
         if isinstance(tweetsItems, TweetsItem):
             try:
-                cursor = self.GetDb()
+                cursor = self.cursor
                 sql = "UPDATE sina SET last_content='%s',tools='%s',likes='%d',comments='%d',transfer='%d',public_time='%s',emotion='%d',update_time='%d' WHERE uid='%s'" % (
                     tweetsItems['Content'], tweetsItems['Tools'], tweetsItems['Like'],
                     tweetsItems['Comment'], tweetsItems['Transfer'], tweetsItems['PubTime'], tweetsItems['emotion'],
                     time.time(), tweetsItems['ID'])
-                print sql
                 cursor.execute(sql)
+                self.db.commit()
             except MySQLdb.Error, e:
                 print e
                 pass
