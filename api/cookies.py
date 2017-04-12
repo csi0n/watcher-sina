@@ -4,8 +4,7 @@ import base64
 import requests
 
 accounts = [
-    {'username': 'chen655@163.com', 'password': '16fe3aa7de0edd58'}
-    # {'username': 'shudieful3618@163.com', 'password': 'a123456'}
+     {'username': 'watcher-user', 'password': 'watcher-password'}
 ]
 
 

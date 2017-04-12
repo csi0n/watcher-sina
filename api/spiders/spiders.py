@@ -87,6 +87,7 @@ class Spider(CrawlSpider):
     def GetDb(self):
         db = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD, db=config.DB_NAME,
                              port=config.DB_PORT, charset="utf8")
+        self.db=db
         return db.cursor()
 
     def GetSinaWatcherUsers(self):
@@ -127,6 +128,7 @@ class Spider(CrawlSpider):
                     time.time(), tweetsItems['ID'])
                 print sql
                 cursor.execute(sql)
+        
             except MySQLdb.Error, e:
                 print e
                 pass
@@ -152,8 +154,8 @@ class Spider(CrawlSpider):
             subject = "用户ID为:%s 发表了一篇新的微博,系统分析报告如下" % (str(tweetsItem['ID']))
             message['Subject'] = Header(subject, 'utf-8')
             try:
-                smtpObj = smtplib.SMTP('smtp.csi0n.com')
-                smtpObj.login(sender, "!16fe3aa7de0edd58")
+                smtpObj = smtplib.SMTP('')
+                smtpObj.login(sender, "")
                 smtpObj.sendmail(sender, receivers, message.as_string())
                 print "邮件发送成功"
             except smtplib.SMTPException, e:
