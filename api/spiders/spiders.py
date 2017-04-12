@@ -87,7 +87,6 @@ class Spider(CrawlSpider):
     def GetDb(self):
         db = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD, db=config.DB_NAME,
                              port=config.DB_PORT, charset="utf8")
-        self.db=db
         return db.cursor()
 
     def GetSinaWatcherUsers(self):
@@ -128,7 +127,6 @@ class Spider(CrawlSpider):
                     time.time(), tweetsItems['ID'])
                 print sql
                 cursor.execute(sql)
-        
             except MySQLdb.Error, e:
                 print e
                 pass
